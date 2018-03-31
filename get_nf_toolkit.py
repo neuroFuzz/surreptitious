@@ -2,13 +2,13 @@
     Author: Andres Andreu < andres at neurofuzzsecurity dot com >
     Company: neuroFuzz, LLC
     Date: 02/11/2016
-    Last Modified: 09/11/2016
+    Last Modified: 03/30/2018
 
     Prog to fetch and setup the neurofuzz_toolkit
 
     BSD 3-Clause License
 
-    Copyright (c) 2016 - 2017, Andres Andreu, neuroFuzz LLC
+    Copyright (c) 2016 - 2018, Andres Andreu, neuroFuzz LLC
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -54,6 +54,7 @@ context = ssl._create_unverified_context()
 
 ####################################################
 NEEDED_DIRS = ['libs', 'vars', 'tordata']
+EXCLUDED_FILE = ['README.md', 'get_toolkit.py', 'main.py', '__init__.py', 'LICENSE', 'macCloaker.py']
 TOOLKIT_URL = 'https://github.com/dre/neurofuzz_toolkit/archive/master.zip'
 NF_TK_ZIP = "neurofuzz_toolkit.zip"
 INIT_FILE = '__init__.py'
@@ -124,7 +125,7 @@ for zf in zFile.namelist():
 
     target_file = get_raw_filename(t_path=zf)
 
-    if target_file:
+    if target_file and target_file not in EXCLUDED_FILE:
 
         target_path = target_dir + target_file
         # ignore init file if it already exists
