@@ -77,3 +77,4 @@ TODO:
 
     - WTF do I do about UDP ports ???
     - Improve final output
+    - Perform nf toolkit updates on a per file basis based on detected changes
