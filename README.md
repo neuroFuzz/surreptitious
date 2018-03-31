@@ -2,11 +2,12 @@
 
 A surreptitious/stealthy port scanner
 
-History - I wrote this circa 2015 based on an incident at an intelligence agency.
-My goal was to show them that a little bit of wisely crafted python could thwart
-some of their multi-million dollar expenditures. Their arrogance certainly was
-a major inspiration for me to write this. And for the record they were never able
-to detect or stop this code :-)
+History - I wrote the original version of this circa 2015 based on an incident
+at an intelligence agency. My goal was to show them that a little bit of wisely
+crafted python could thwart some of their multi-million dollar investments in
+commercial cyber security products. Their arrogance certainly was a major
+inspiration for me to write this. And for the record to my knowledge they were
+never able to detect or stop this prog :-)
 
 This was written on Linux and has been used/tested on Fedora and Debian/Ubuntu.
 I have no plans or time to port/test to/on any different platforms. If you wanna
