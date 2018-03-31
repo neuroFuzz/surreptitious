@@ -27,15 +27,13 @@ Requirements:
 - tor
 - proxychains4
 - nmap
-- neurofuzz_toolkit (https://github.com/dre/neurofuzz_toolkit)
+- neurofuzz_toolkit (gets downloaded and set up by get_nf_toolkit.py)
 
 
 Getting Started:
 
-- go to the directory where you checked out the 'surreptitious' project and copy
-everything to your working directory
-run the following to pull down the 'neurofuzz_toolkit':
-
+    - git clone git@github.com:neuroFuzz/surreptitious.git
+    - cd surreptitious
     - python get_nf_toolkit.py
 
 

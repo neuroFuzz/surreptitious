@@ -128,25 +128,22 @@ for zf in zFile.namelist():
     if target_file and target_file not in EXCLUDED_FILE:
 
         target_path = target_dir + target_file
-        # ignore init file if it already exists
-        if target_file == INIT_FILE:
-            if os.path.isfile(target_path):
-                #print "Skipping: %s" % target_path
-                continue
-            else:
-                '''
-                    just touch the init file since
-                    we just have them as empty files
-                '''
-                open(target_path, 'w').close()
-        else:
-            #print target_path
-            try:
-                data = zFile.read(zf)
-                with open(target_path, 'wb') as tp:
-                    tp.write(data)
-            except KeyError:
-                print 'ERROR: Did not find %s in zip file' % zf
+        #print target_path
+        try:
+            data = zFile.read(zf)
+            with open(target_path, 'wb') as tp:
+                tp.write(data)
+        except KeyError:
+            print 'ERROR: Did not find %s in zip file' % zf
+
+    '''
+        just touch the init file since
+        we just have them as empty files
+    '''
+    if target_dir:
+        target_init = "{}{}".format(target_dir,'__init__.py')
+        if not os.path.isfile(target_init):
+            open(target_init, 'w').close()
 ####################################################
 # get rid of toolkit zip file
 if os.path.isfile(NF_TK_ZIP):
