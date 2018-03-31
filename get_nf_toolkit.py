@@ -140,7 +140,7 @@ for zf in zFile.namelist():
         just touch the init file since
         we just have them as empty files
     '''
-    if target_dir:
+    if target_dir and not target_dir == 'tordata/':
         target_init = "{}{}".format(target_dir,'__init__.py')
         if not os.path.isfile(target_init):
             open(target_init, 'w').close()
