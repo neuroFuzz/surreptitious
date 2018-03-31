@@ -45,3 +45,34 @@ Usage:
     -s = start port
     -e = end port
     -p = path/directory where the final nmap results files will be saved
+
+
+Notes:
+
+    - currently only scans for TCP ports
+
+    - this prog works in 2 waves:
+
+        - wave 1 is the long, slow and stealthy port scan doing nothing fancy,
+            pure check to see if a port is open and if something is listening
+            on the other end
+        - wave 2 - we take the results from wave 1 and pass those in to nmap
+            so that the nmap scan is focused exclusively on ports we know/think
+            are open. here we do fancy stuff like service and OS detection via
+            nmap's features. OS detection via nmap requires root privilege
+
+    - this IS NOT fast, that is by design - it is written to try to NEVER trip
+        a sensor or alert a sentry
+
+    - Writes out the nmap results to the dir set forth with -p, file names are
+        in the following format:
+
+            timestamp_ipaddress
+
+        if you dont know how to convert unix timestamps to something that makes
+        sense to you ..... you shouldn't be running a prog like this one :-)
+
+TODO:
+
+    - WTF do I do about UDP ports ???
+    - Improve final output
