@@ -36,6 +36,7 @@ Getting Started:
     - git clone git@github.com:neuroFuzz/surreptitious.git
     - cd surreptitious
     - python get_nf_toolkit.py
+    - run the prog as needed (see Usage section)
 
 
 Usage:
