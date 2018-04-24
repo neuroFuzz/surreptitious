@@ -286,6 +286,9 @@ def scan_via_nmap(nmap_path='',
         # TODO - handle this mkdir more elegantly
         if not os.path.exists(results_path):
             os.makedirs(results_path)
+        results_path = "{}/{}".format(results_path,the_target)
+        if not os.path.exists(results_path):
+            os.makedirs(results_path)
 
         # TODO set up some tor sockets for nmap to use
         list_of_sock_ports = []
@@ -345,7 +348,7 @@ def scan_via_nmap(nmap_path='',
         print("CMD: {}".format(cmd))
         print("CMD: {}".format(cmd.split()))
         '''
-        
+
         if VERBOSE:
             print("Now attempting to run: {}".format(cmd))
 
