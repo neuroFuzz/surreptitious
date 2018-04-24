@@ -341,9 +341,10 @@ def scan_via_nmap(nmap_path='',
                             the_target)
         """
 
-
+        '''
         print("CMD: {}".format(cmd))
         print("CMD: {}".format(cmd.split()))
+        '''
         
         if VERBOSE:
             print("Now attempting to run: {}".format(cmd))
