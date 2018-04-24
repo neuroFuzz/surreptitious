@@ -299,9 +299,25 @@ def scan_via_nmap(nmap_path='',
             if the_tuple not in list_of_sock_ports:
                 list_of_sock_ports.append(the_tuple)
 
-        PrxConf.neurofuzz_modify_proxychains_conf(t_list=list_of_sock_ports)
-        proxychains_conf_path = "{}/{}".format(os.getcwd(),'proxychains.conf')
+        cmd = ''
 
+        if proxychains_path != "null":
+
+            PrxConf.neurofuzz_modify_proxychains_conf(t_list=list_of_sock_ports)
+            proxychains_conf_path = "{}/{}".format(os.getcwd(),'proxychains.conf')
+
+            cmd += "{} -f {} ".format(proxychains_path, proxychains_conf_path)
+
+        cmd += "{} -Pn ".format(nmap_path)
+        if os.getuid() == 0:
+            cmd += "-O "
+        cmd += "-sV --version-intensity 5 -oA {}/{} -p {} {}".format(results_path,
+                                                                    str(int(time.time())) + "_" + the_target,
+                                                                    the_ports,
+                                                                    the_target
+                                                                    )
+
+        """
         '''
             nmap's -O (OS detection) requires root priv
         '''
@@ -323,11 +339,12 @@ def scan_via_nmap(nmap_path='',
                             str(int(time.time())) + "_" + the_target,
                             the_ports,
                             the_target)
+        """
 
-        '''
+
         print("CMD: {}".format(cmd))
         print("CMD: {}".format(cmd.split()))
-        '''
+        
         if VERBOSE:
             print("Now attempting to run: {}".format(cmd))
 
