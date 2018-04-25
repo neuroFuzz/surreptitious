@@ -26,9 +26,13 @@ Requirements:
 
 - python (2.x family currently)
 - tor
-- proxychains4
 - nmap
 - neurofuzz_toolkit (gets downloaded and set up by get_nf_toolkit.py)
+
+Optional:
+
+- proxychains4
+- xmltodict (if you want JSON output of nmap results - 'sudo apt install python-xmltodict' on apt managed system)
 
 
 Getting Started:

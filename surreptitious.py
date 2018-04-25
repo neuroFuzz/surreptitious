@@ -45,6 +45,7 @@
     condition - Dre
 
 '''
+import json
 import sys
 import random
 import socket
@@ -75,6 +76,12 @@ REMOVE_RESULTS = False
     if you want to force its usage
 '''
 USE_PROXYCHAINS_NMAP = False
+
+OUTPUT_JSON = True
+try:
+    import xmltodict
+except ImportError, e:
+    OUTPUT_JSON = False
 #####################################################
 # funcs
 
@@ -320,8 +327,9 @@ def scan_via_nmap(nmap_path='',
         cmd += "{} -Pn ".format(nmap_path)
         if os.getuid() == 0:
             cmd += "-O "
+        output_fname = str(int(time.time())) + "_" + the_target
         cmd += "-sV --version-intensity 5 -oA {}/{} -p {} {}".format(results_path,
-                                                                    str(int(time.time())) + "_" + the_target,
+                                                                    output_fname,
                                                                     the_ports,
                                                                     the_target
                                                                     )
@@ -363,6 +371,13 @@ def scan_via_nmap(nmap_path='',
         except:
             pass
         sc.kill_sockets()
+
+
+        if OUTPUT_JSON:
+            nmap_xml_file = "{}/{}".format(results_path,output_fname)
+            with open(nmap_xml_file) as f_open:
+                xml_content = f_open.read()
+                print(json.dumps(xmltodict.parse(xml_content), indent=4, sort_keys=True))
 
 
 def usage():
