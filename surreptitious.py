@@ -375,9 +375,14 @@ def scan_via_nmap(nmap_path='',
 
         if OUTPUT_JSON:
             nmap_xml_file = "{}/{}".format(results_path,output_fname)
+            xml_content = ''
             with open("{}.xml".format(nmap_xml_file)) as f_open:
                 xml_content = f_open.read()
-                print(json.dumps(xmltodict.parse(xml_content), indent=4, sort_keys=True))
+
+            if xml_content:
+                with open("{}.json".format(nmap_xml_file), 'w') as json_outfile:
+                    json.dump(xmltodict.parse(xml_content), json_outfile)
+                #print(json.dumps(xmltodict.parse(xml_content), indent=4, sort_keys=True))
 
 
 def usage():
