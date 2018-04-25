@@ -2,7 +2,7 @@
     Author: Andres Andreu < andres at neurofuzzsecurity dot com >
     Company: neuroFuzz, LLC
     Date: 7/21/2016
-    Last Modified: 03/29/2018
+    Last Modified: 04/25/2018
 
     BSD 3-Clause License
 
@@ -69,6 +69,12 @@ TMPFILE = '/tmp/disc_ports_{}'
 USETOR = True
 VERBOSE = True
 REMOVE_RESULTS = False
+'''
+    using nmap with proxychains does not give
+    consistent results so set this to True
+    if you want to force its usage
+'''
+USE_PROXYCHAINS_NMAP = False
 #####################################################
 # funcs
 
@@ -419,10 +425,20 @@ if __name__ == "__main__":
     else:
         the_ports = [i for i in range(start_port,end_port+1)]
 
-    exe_paths = get_required_paths()
-    print exe_paths
-    if exe_paths.has_key('error_message'):
-        print("\n{}\n\n".format(exe_paths['error_message']))
+    exe_paths = {}
+    if USE_PROXYCHAINS_NMAP:
+        exe_paths = get_required_paths(use_proxychains=True)
+    else:
+        exe_paths = get_required_paths()
+
+    if exe_paths:
+        if VERBOSE:
+            print "Detected Paths: {}".format(exe_paths)
+        if exe_paths.has_key('error_message'):
+            print("\n{}\n\n".format(exe_paths['error_message']))
+            sys.exit()
+    else:
+        print("\n{}\n\n".format("Problem with required paths, cannot continue"))
         sys.exit()
 
     '''
