@@ -64,7 +64,7 @@ from libs import nftk_modify_proxychains_conf as PrxConf
 #####################################################
 #ports = [i for i in range(1,65536)]
 #ports = [i for i in range(79,85)]
-THRESHOLD = 6
+THRESHOLD = 12
 TMPFILE = '/tmp/disc_ports_{}'
 #USETOR = False
 USETOR = True
@@ -216,9 +216,8 @@ def main(tor_path='', the_target='', the_ports=[]):
             #print the_port
             the_vars.append('d1' + "_" + str(the_port))
 
-
-        print "LEN: %d" % len(the_vars)
-        #print "LEN: %d" % len(list_of_ports)
+        if VERBOSE:
+            print "Spawning {} sockets".format(len(the_vars))
 
         if the_vars:
             for v in the_vars:

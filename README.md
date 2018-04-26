@@ -80,6 +80,7 @@ Notes:
 
 TODO:
 
-    - WTF do I do about UDP ports ???
-    - Improve final output
+    - Use logger to log output to file instead of stdout
+    - Improve final output (maybe use colors)
     - Perform nf toolkit updates on a per file basis based on detected changes
+    - WTF do I do about UDP ports ???
