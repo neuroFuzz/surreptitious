@@ -231,7 +231,8 @@ def main(tor_path='', the_target='', the_ports=[]):
                 v_ix = int(v_ix[1:])
                 v_port = int(v_port)
                 if VERBOSE:
-                    print("Scanning: {}, port: {}".format(target,v_port))
+                    #print("Scanning: {}, port: {}".format(target,v_port))
+                    logger.info( "Scanning: {}, port: {}".format(target,v_port) )
                 '''
                 print v_ix
                 print v_port
