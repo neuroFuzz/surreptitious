@@ -85,6 +85,7 @@ except ImportError, e:
     OUTPUT_JSON = False
 
 PROG_NAME = 'surreptitious'
+VERBOSE_OUT = '[VERBOSE]'
 #####################################################
 
 # funcs
@@ -222,7 +223,8 @@ def main(tor_path='', the_target='', the_ports=[]):
             the_vars.append('d1' + "_" + str(the_port))
 
         if VERBOSE:
-            print "Spawning {} sockets".format(len(the_vars))
+            #print "Spawning {} sockets".format(len(the_vars))
+            logger.info( "{} Spawning {} sockets".format(VERBOSE_OUT, len(the_vars)) )
 
         if the_vars:
             for v in the_vars:
@@ -231,8 +233,7 @@ def main(tor_path='', the_target='', the_ports=[]):
                 v_ix = int(v_ix[1:])
                 v_port = int(v_port)
                 if VERBOSE:
-                    #print("Scanning: {}, port: {}".format(target,v_port))
-                    logger.info( "Scanning: {}, port: {}".format(target,v_port) )
+                    logger.info( "{} Scanning: {}, port: {}".format(VERBOSE_OUT, target,v_port) )
                 '''
                 print v_ix
                 print v_port
@@ -244,30 +245,6 @@ def main(tor_path='', the_target='', the_ports=[]):
                 p = multiprocessing.Process(name=scan_one, args=[target,v_port,v_ix,tor_path], target=scan_one)
                 p.start()
                 p.join()
-
-            '''
-            for v in the_vars:
-                print("Processing: {}".format(v))
-                globals()[v].start()
-                time.sleep(random.randint(1,4))
-                globals()[v].join()
-                print("Done Processing: {}".format(v))
-            '''
-            """
-            print "sleeping 4"
-            time.sleep(4)
-            print "done sleeping 4"
-            # join em
-            print "joining"
-            for v in the_vars:
-                print v
-                globals()[v].join(4)
-
-            print "done joining"
-            """
-
-        #print(','.join(list_of_ports))
-
 
         if USETOR:
             clean_up_tor_socks()
