@@ -450,8 +450,8 @@ keep_fds = [handler.stream.fileno()]
 
 
 
-logger.log( "{} starting - pid: {}".format(PROG_NAME, os.getpid()) )
-logger.log( "target: {}".format(target) )
+logger.info( "{} starting - pid: {}".format(PROG_NAME, os.getpid()) )
+logger.info( "target: {}".format(target) )
 sys.exit()
 #####################################################
 
