@@ -15,7 +15,8 @@ contribute in this way or any other way let me know:
 
     andres [at] neurofuzzsecurity dot com
 
-This prog is intended to be used for legal purposes.
+This prog is intended to be used for legal and authorized purposes (i.e. an
+approved pen test).
 
 This prog is not meant to be run on a LAN as it uses tor sockets to route each
 port check via a different internet based path. So the goal is to scan a public
@@ -70,8 +71,8 @@ Notes:
     - this IS NOT fast, that is by design - it is written to try to NEVER trip
         a sensor or alert a sentry
 
-    - Writes out the nmap results to the dir set forth with -p, file names are
-        in the following format:
+    - Writes out the nmap results to the dir set forth with -p plus a subdir based
+        on the target ip address, file names are in the following format:
 
             timestamp_ipaddress
 
@@ -81,6 +82,7 @@ Notes:
 TODO:
 
     - Use logger to log output to file instead of stdout
+    - is USETOR make sure the target is a routable public ip
     - Improve final output (maybe use colors)
     - Perform nf toolkit updates on a per file basis based on detected changes
     - WTF do I do about UDP ports ???
