@@ -429,6 +429,8 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 keep_fds = [handler.stream.fileno()]
 
+print("Log data being written to: '/{}/{}.log'".format(LOG_FILE_LOC, LOG_FNAME))
+
 logger.info( "{} starting - pid: {}".format(PROG_NAME, os.getpid()) )
 logger.info( "target: {}".format(target) )
 logger.info( "target non-routable: {}".format(target_non_routable) )
@@ -470,7 +472,7 @@ if __name__ == "__main__":
 
     if exe_paths:
         if VERBOSE:
-            print "Detected Paths: {}".format(exe_paths)
+            logger.info( "{} detected paths: {}".format(VERBOSE_OUT, exe_paths) )
         if exe_paths.has_key('error_message'):
             print("\n{}\n\n".format(exe_paths['error_message']))
             sys.exit()
