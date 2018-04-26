@@ -2,7 +2,7 @@
     Author: Andres Andreu < andres at neurofuzzsecurity dot com >
     Company: neuroFuzz, LLC
     Date: 7/21/2016
-    Last Modified: 04/25/2018
+    Last Modified: 04/26/2018
 
     BSD 3-Clause License
 
@@ -48,6 +48,7 @@
 import json
 import sys
 import random
+import logging
 import socket
 import signal
 import os
@@ -58,7 +59,7 @@ import subprocess
 import multiprocessing
 from struct import *
 from libs.nftk_requirements import get_required_paths
-from libs.nftk_sys_funcs import delete_file, find_file
+from libs.nftk_sys_funcs import delete_file, find_file, target_ip_private
 from libs import nftk_socket_controller as SocketController
 from libs import nftk_modify_proxychains_conf as PrxConf
 #####################################################
@@ -82,7 +83,10 @@ try:
     import xmltodict
 except ImportError, e:
     OUTPUT_JSON = False
+
+PROG_NAME = 'surreptitious'
 #####################################################
+
 # funcs
 
 def clean_up_tor_socks():
@@ -387,48 +391,81 @@ def scan_via_nmap(nmap_path='',
 def usage():
     print("Usage:\npython surreptitious.py -t ip_address -s 1 -e 65535 -p nmap_results\n\n")
     sys.exit()
+
+
+
+
+#####################################################
+target = None
+start_port = 0
+end_port = 0
+results_path = None
+
+parser = optparse.OptionParser()
+parser.add_option('-t', action="store", dest=target)
+parser.add_option('-s', action="store", dest="s", type="int")
+parser.add_option('-e', action="store", dest="e", type="int")
+parser.add_option('-p', action="store", dest="p")
+options, args = parser.parse_args()
+'''
+print options
+print args
+'''
+if options.t:
+    target = options.t
+else:
+    print("\n{}\n".format("Target IP Address required"))
+    usage()
+    sys.exit()
+if options.s:
+    start_port = options.s
+else:
+    print("\n{}\n".format("Start port value required"))
+    usage()
+    sys.exit()
+if options.e:
+    end_port = options.e
+else:
+    print("\n{}\n".format("End port value required"))
+    usage()
+    sys.exit()
+if options.p:
+    results_path = options.p
+else:
+    print("\n{}\n".format("Results path required"))
+    usage()
+    sys.exit()
+
+LOG_FILE_LOC = 'tmp'
+LOG_FNAME = 'neurofuzzsecurity_{}_{}_log'.format(PROG_NAME, target)
+formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',
+                              datefmt='%Y-%m-%d %H:%M:%S')
+handler = logging.FileHandler("/{}/{}.log".format(LOG_FILE_LOC, LOG_FNAME), "a")
+handler.setFormatter(formatter)
+logger = logging.getLogger('{}'.format(LOG_FNAME))
+logger.propagate = False
+logger.setLevel(logging.DEBUG)
+logger.addHandler(handler)
+keep_fds = [handler.stream.fileno()]
+
+
+
+logger.log( "{} starting - pid: {}".format(PROG_NAME, os.getpid()) )
+logger.log( "target: {}".format(target) )
+sys.exit()
+#####################################################
+
+
+
 #####################################################
 
 if __name__ == "__main__":
 
-    target = None
-    start_port = 0
-    end_port = 0
-    results_path = None
 
-    parser = optparse.OptionParser()
-    parser.add_option('-t', action="store", dest=target)
-    parser.add_option('-s', action="store", dest="s", type="int")
-    parser.add_option('-e', action="store", dest="e", type="int")
-    parser.add_option('-p', action="store", dest="p")
-    options, args = parser.parse_args()
-    '''
-    print options
-    print args
-    '''
-    if options.t:
-        target = options.t
-    else:
-        print("\n{}\n".format("Target IP Address required"))
-        usage()
-        sys.exit()
-    if options.s:
-        start_port = options.s
-    else:
-        print("\n{}\n".format("Start port value required"))
-        usage()
-        sys.exit()
-    if options.e:
-        end_port = options.e
-    else:
-        print("\n{}\n".format("End port value required"))
-        usage()
-        sys.exit()
-    if options.p:
-        results_path = options.p
-    else:
-        print("\n{}\n".format("Results path required"))
-        usage()
+
+    target_non_routable = target_ip_private(ip_addr=target)
+    if USETOR and target_non_routable:
+        print("\n{}\n\n".format("Cannot run using tor sockets against a non-routable target address"))
         sys.exit()
 
     the_ports = []
@@ -443,6 +480,33 @@ if __name__ == "__main__":
         the_ports.append(start_port)
     else:
         the_ports = [i for i in range(start_port,end_port+1)]
+
+
+    logger.log( "{} starting - pid: {}".format(PROG_NAME, os.getpid()) )
+    logger.log( "target: {}".format(target) )
+    logger.log( "target non-routable: {}".format(target_non_routable) )
+    logger.log( "start port: {}".format(start_port) )
+    logger.log( "end port: {}".format(end_port) )
+    logger.log( "results path: {}".format(results_path) )
+
+    XXX
+    USETOR = True
+    VERBOSE = True
+    REMOVE_RESULTS = False
+    '''
+        using nmap with proxychains does not give
+        consistent results so set this to True
+        if you want to force its usage
+    '''
+    USE_PROXYCHAINS_NMAP = False
+
+    OUTPUT_JSON = True
+    try:
+        import xmltodict
+    except ImportError, e:
+        OUTPUT_JSON = False
+    XXX
+
 
     exe_paths = {}
     if USE_PROXYCHAINS_NMAP:
