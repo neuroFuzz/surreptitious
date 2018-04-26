@@ -94,7 +94,8 @@ def clean_up_tor_socks():
     ''' '''
 
     if VERBOSE:
-        print("Cleaning up tor sockets")
+        logger.info( "{} Cleaning up tor sockets" )
+
     for fname in glob.glob('tordata/tor*/tor*.pid'):
         the_pid = ''
         with open (fname, "r") as myfile:
@@ -103,7 +104,7 @@ def clean_up_tor_socks():
             try:
                 os.kill(the_pid, signal.SIGQUIT)
                 if VERBOSE:
-                    print("Killing pid: {}".format(the_pid))
+                    logger.info( "{} Killing pid: {}".format(VERBOSE_OUT, the_pid) )
             except OSError:
                 pass
 
@@ -150,7 +151,8 @@ def scan_one(the_ip='', the_port=0, t_ix=1, tor_path=''):
         result = s.connect_ex((the_ip, the_port))
 
         if(result == 0):
-            print('Port {}: OPEN'.format(the_port))
+            if VERBOSE:
+                logger.info( "{} Discovered open port: {}".format(VERBOSE_OUT, the_port) )
             with open(TMPFILE, "a") as myfile:
                 myfile.write("%s\n" % the_port)
 
