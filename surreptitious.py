@@ -393,8 +393,6 @@ def usage():
     sys.exit()
 
 
-
-
 #####################################################
 target = None
 start_port = 0
@@ -450,25 +448,15 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 keep_fds = [handler.stream.fileno()]
 
-
-
 logger.info( "{} starting - pid: {}".format(PROG_NAME, os.getpid()) )
 logger.info( "target: {}".format(target) )
 logger.info( "target non-routable: {}".format(target_non_routable) )
 logger.info( "start port: {}".format(start_port) )
 logger.info( "end port: {}".format(end_port) )
-logger.info( "results path: {}".format(results_path) )
-sys.exit()
-#####################################################
-
-
-
+logger.info( "results path: {}/{}".format(results_path, target) )
 #####################################################
 
 if __name__ == "__main__":
-
-
-
 
     if USETOR and target_non_routable:
         print("\n{}\n\n".format("Cannot run using tor sockets against a non-routable target address"))
@@ -487,14 +475,15 @@ if __name__ == "__main__":
     else:
         the_ports = [i for i in range(start_port,end_port+1)]
 
-
+    '''
     logger.info( "{} starting - pid: {}".format(PROG_NAME, os.getpid()) )
     logger.info( "target: {}".format(target) )
     logger.info( "target non-routable: {}".format(target_non_routable) )
     logger.info( "start port: {}".format(start_port) )
     logger.info( "end port: {}".format(end_port) )
     logger.info( "results path: {}".format(results_path) )
-
+    '''
+    '''
     XXX
     USETOR = True
     VERBOSE = True
@@ -512,7 +501,7 @@ if __name__ == "__main__":
     except ImportError, e:
         OUTPUT_JSON = False
     XXX
-
+    '''
 
     exe_paths = {}
     if USE_PROXYCHAINS_NMAP:
