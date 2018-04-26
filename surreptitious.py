@@ -483,7 +483,7 @@ if __name__ == "__main__":
     logger.info( "end port: {}".format(end_port) )
     logger.info( "results path: {}".format(results_path) )
     '''
-    '''
+    """
     XXX
     USETOR = True
     VERBOSE = True
@@ -501,7 +501,7 @@ if __name__ == "__main__":
     except ImportError, e:
         OUTPUT_JSON = False
     XXX
-    '''
+    """
 
     exe_paths = {}
     if USE_PROXYCHAINS_NMAP:
