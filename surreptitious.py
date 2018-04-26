@@ -436,6 +436,8 @@ else:
     usage()
     sys.exit()
 
+target_non_routable = target_ip_private(ip_addr=target)
+
 LOG_FILE_LOC = 'tmp'
 LOG_FNAME = 'neurofuzzsecurity_{}_{}'.format(PROG_NAME, target)
 formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',
@@ -467,7 +469,7 @@ if __name__ == "__main__":
 
 
 
-    target_non_routable = target_ip_private(ip_addr=target)
+
     if USETOR and target_non_routable:
         print("\n{}\n\n".format("Cannot run using tor sockets against a non-routable target address"))
         sys.exit()
