@@ -164,7 +164,8 @@ def main(tor_path='', the_target='', the_ports=[]):
         target = the_target
         TMPFILE = TMPFILE.format(target)
     except Exception as err:
-        print str(err)
+        #print str(err)
+        logger.info( "Error: {}".format(str(err)) )
         sys.exit(2)
 
     if target == None:
@@ -475,33 +476,11 @@ if __name__ == "__main__":
     else:
         the_ports = [i for i in range(start_port,end_port+1)]
 
-    '''
-    logger.info( "{} starting - pid: {}".format(PROG_NAME, os.getpid()) )
-    logger.info( "target: {}".format(target) )
-    logger.info( "target non-routable: {}".format(target_non_routable) )
-    logger.info( "start port: {}".format(start_port) )
-    logger.info( "end port: {}".format(end_port) )
-    logger.info( "results path: {}".format(results_path) )
-    '''
-    """
-    XXX
-    USETOR = True
-    VERBOSE = True
-    REMOVE_RESULTS = False
-    '''
-        using nmap with proxychains does not give
-        consistent results so set this to True
-        if you want to force its usage
-    '''
-    USE_PROXYCHAINS_NMAP = False
-
-    OUTPUT_JSON = True
-    try:
-        import xmltodict
-    except ImportError, e:
-        OUTPUT_JSON = False
-    XXX
-    """
+    logger.info( "use tor: {}".format(USETOR) )
+    logger.info( "verbose: {}".format(VERBOSE) )
+    logger.info( "remove results: {}".format(REMOVE_RESULTS) )
+    logger.info( "use nmap with proxychains: {}".format(USE_PROXYCHAINS_NMAP) )
+    logger.info( "add output in JSON: {}".format(OUTPUT_JSON) )
 
     exe_paths = {}
     if USE_PROXYCHAINS_NMAP:
@@ -519,13 +498,6 @@ if __name__ == "__main__":
         print("\n{}\n\n".format("Problem with required paths, cannot continue"))
         sys.exit()
 
-    '''
-    try:
-        target = sys.argv[1]
-    except Exception as err:
-        print str(err)
-        sys.exit(2)
-    '''
     if target and len(the_ports) > 0 and results_path:
 
         main(tor_path=exe_paths['tor_path'], the_target=target, the_ports=the_ports)
