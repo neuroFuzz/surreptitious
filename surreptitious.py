@@ -437,7 +437,7 @@ else:
     sys.exit()
 
 LOG_FILE_LOC = 'tmp'
-LOG_FNAME = 'neurofuzzsecurity_{}_{}_log'.format(PROG_NAME, target)
+LOG_FNAME = 'neurofuzzsecurity_{}_{}'.format(PROG_NAME, target)
 formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',
                               datefmt='%Y-%m-%d %H:%M:%S')
 handler = logging.FileHandler("/{}/{}.log".format(LOG_FILE_LOC, LOG_FNAME), "a")
@@ -452,6 +452,10 @@ keep_fds = [handler.stream.fileno()]
 
 logger.info( "{} starting - pid: {}".format(PROG_NAME, os.getpid()) )
 logger.info( "target: {}".format(target) )
+logger.info( "target non-routable: {}".format(target_non_routable) )
+logger.info( "start port: {}".format(start_port) )
+logger.info( "end port: {}".format(end_port) )
+logger.info( "results path: {}".format(results_path) )
 sys.exit()
 #####################################################
 
@@ -482,12 +486,12 @@ if __name__ == "__main__":
         the_ports = [i for i in range(start_port,end_port+1)]
 
 
-    logger.log( "{} starting - pid: {}".format(PROG_NAME, os.getpid()) )
-    logger.log( "target: {}".format(target) )
-    logger.log( "target non-routable: {}".format(target_non_routable) )
-    logger.log( "start port: {}".format(start_port) )
-    logger.log( "end port: {}".format(end_port) )
-    logger.log( "results path: {}".format(results_path) )
+    logger.info( "{} starting - pid: {}".format(PROG_NAME, os.getpid()) )
+    logger.info( "target: {}".format(target) )
+    logger.info( "target non-routable: {}".format(target_non_routable) )
+    logger.info( "start port: {}".format(start_port) )
+    logger.info( "end port: {}".format(end_port) )
+    logger.info( "results path: {}".format(results_path) )
 
     XXX
     USETOR = True
