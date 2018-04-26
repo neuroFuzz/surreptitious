@@ -94,7 +94,7 @@ def clean_up_tor_socks():
     ''' '''
 
     if VERBOSE:
-        logger.info( "{} Cleaning up tor sockets" )
+        logger.info( "{} Cleaning up tor sockets".format(VERBOSE_OUT) )
 
     for fname in glob.glob('tordata/tor*/tor*.pid'):
         the_pid = ''
@@ -348,7 +348,7 @@ def scan_via_nmap(nmap_path='',
         '''
 
         if VERBOSE:
-            print("Now attempting to run: {}".format(cmd))
+            logger.info( "{} now attempting to run: {}".format(VERBOSE_OUT, cmd) )
 
         try:
             subprocess.check_output(cmd.split())
