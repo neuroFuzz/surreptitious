@@ -2,7 +2,7 @@
     Author: Andres Andreu < andres at neurofuzzsecurity dot com >
     Company: neuroFuzz, LLC
     Date: 7/21/2016
-    Last Modified: 04/26/2018
+    Last Modified: 08/17/2018
 
     BSD 3-Clause License
 
@@ -81,7 +81,7 @@ USE_PROXYCHAINS_NMAP = False
 OUTPUT_JSON = True
 try:
     import xmltodict
-except ImportError, e:
+except ImportError:
     OUTPUT_JSON = False
 
 PROG_NAME = 'surreptitious'

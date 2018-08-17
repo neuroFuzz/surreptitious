@@ -33,6 +33,7 @@ Requirements:
 Optional:
 
 - proxychains4
+-- git clone https://github.com/rofl0r/proxychains-ng.git; make; sudo make install
 - xmltodict (if you want JSON output of nmap results - 'sudo apt install python-xmltodict' on apt managed system)
 
 
