@@ -486,9 +486,9 @@ if __name__ == "__main__":
 
         disc_ports = read_tmp_data()
         if disc_ports:
-            print "FOUND:"
+            print("{}".format("FOUND:"))
             for i in disc_ports:
-                print i
+                print(i)
 
         scan_via_nmap(nmap_path=exe_paths['nmap_path'],
                         proxychains_path=exe_paths['proxychains_path'],
