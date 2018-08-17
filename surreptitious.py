@@ -172,11 +172,11 @@ def main(tor_path='', the_target='', the_ports=[]):
         sys.exit(2)
 
     if target == None:
-        print "No ip given, which is a required argument!"
+        print("{}".format("No ip given, which is a required argument!"))
         sys.exit()
 
     if len(the_ports) == 0:
-        print "Need a range of ports"
+        print("{}".format("Need a range of ports"))
         sys.exit()
     else:
         ports = the_ports
