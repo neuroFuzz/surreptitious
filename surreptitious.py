@@ -1,8 +1,9 @@
+#!/usr/bin/env python3
 '''
     Author: Andres Andreu < andres at neurofuzzsecurity dot com >
     Company: neuroFuzz, LLC
     Date: 7/21/2016
-    Last Modified: 08/17/2018
+    Last Modified: 08/18/2018
 
     BSD 3-Clause License
 
@@ -69,7 +70,7 @@ from persistqueue import queue
 #####################################################
 #ports = [i for i in range(1,65536)]
 #ports = [i for i in range(79,85)]
-THRESHOLD = 12
+THRESHOLD = 15
 TMPFILE = '/tmp/discovered_ports'
 #USETOR = False
 USETOR = True
@@ -78,7 +79,8 @@ REMOVE_RESULTS = False
 '''
     using nmap with proxychains does not give
     consistent results so set this to True
-    if you want to force its usage
+    if you want to force its usage but you
+    have been forewarned that mileage will vary
 '''
 USE_PROXYCHAINS_NMAP = False
 
@@ -164,6 +166,7 @@ def scan_one(the_ip='', the_port=0, t_ix=1, tor_path=''):
         if(result == 0):
             if VERBOSE:
                 logger.info( "{} Discovered open port: {} on {}".format(VERBOSE_OUT, the_port, the_ip) )
+                #print("{} Discovered open port: {} on {}".format(VERBOSE_OUT, the_port, the_ip))
             with open(TMPFILE, "a") as myfile:
                 myfile.write("{}:{}\n".format(the_ip,the_port))
 
@@ -287,7 +290,7 @@ def scan_via_nmap(nmap_path='',
                 results_path=''):
 
     #print("{} - {} - {} - {} - {} - {}".format(nmap_path,proxychains_path,tor_path,the_ports,the_target,results_path))
-    if nmap_path and proxychains_path and the_ports and the_target and results_path:
+    if nmap_path and the_ports and the_target and results_path:
 
         if results_path.endswith("/"):
             results_path = results_path[:-1]
@@ -298,21 +301,22 @@ def scan_via_nmap(nmap_path='',
         if not os.path.exists(results_path):
             os.makedirs(results_path)
 
-        # TODO set up some tor sockets for nmap to use
-        list_of_sock_ports = []
-        sc = SocketController.SocketController(tor_executable_path=tor_path)
-        for i in range(100,105):
-            if sc:
-                sc.spawn_socket(t_instance=i)
-                time.sleep(random.randint(1,3))
-        for p in sc.get_port_list():
-            the_tuple = ('127.0.0.1',p)
-            if the_tuple not in list_of_sock_ports:
-                list_of_sock_ports.append(the_tuple)
+        if USE_PROXYCHAINS_NMAP:
+            # TODO set up some tor sockets for nmap to use
+            list_of_sock_ports = []
+            sc = SocketController.SocketController(tor_executable_path=tor_path)
+            for i in range(100,105):
+                if sc:
+                    sc.spawn_socket(t_instance=i)
+                    time.sleep(random.randint(1,3))
+            for p in sc.get_port_list():
+                the_tuple = ('127.0.0.1',p)
+                if the_tuple not in list_of_sock_ports:
+                    list_of_sock_ports.append(the_tuple)
 
         cmd = ''
 
-        if proxychains_path != "null":
+        if USE_PROXYCHAINS_NMAP and proxychains_path != "null":
 
             PrxConf.neurofuzz_modify_proxychains_conf(t_list=list_of_sock_ports)
             proxychains_conf_path = "{}/{}".format(os.getcwd(),'proxychains.conf')
@@ -365,8 +369,9 @@ def scan_via_nmap(nmap_path='',
             subprocess.check_output(cmd.split())
         except:
             pass
-        sc.kill_sockets()
 
+        if USE_PROXYCHAINS_NMAP:
+            sc.kill_sockets()
 
         if OUTPUT_JSON:
             nmap_xml_file = "{}/{}".format(results_path,output_fname)
@@ -435,8 +440,10 @@ if "," in target:
 else:
     the_targets.append(target)
 
+'''
 print(the_targets)
 print()
+'''
 
 if len(the_targets) > 0:
     for t in the_targets:
@@ -519,6 +526,11 @@ if __name__ == "__main__":
     q = queue.Queue('.queue_file')
 
     # check to see if there is any data in the queue
+    '''
+        TODO - ask the user if they want to purge the
+        data that was persistent in the queue or if
+        they want that scan to continue
+    '''
     while q.qsize() > 0:
         # TODO - what do we do with this data ???
         ''' for now just clear the queue '''
@@ -627,9 +639,20 @@ if __name__ == "__main__":
                 discovered_ip_ports[tip] = []
                 discovered_ip_ports[tip].append(tport)
 
-    print(discovered_ip_ports)
+    #print(discovered_ip_ports)
+    for k,v in discovered_ip_ports.items():
+        '''
+        print(k)
+        print(v)
+        '''
+        scan_via_nmap(nmap_path=exe_paths['nmap_path'],
+                        proxychains_path=exe_paths['proxychains_path'],
+                        the_ports=','.join(v),
+                        the_target=k,
+                        tor_path=exe_paths['tor_path'],
+                        results_path=results_path
+                        )
 
-    # TODO - add nmap calls
 
     # get rid of the results file
     if REMOVE_RESULTS:
