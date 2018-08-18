@@ -58,15 +58,19 @@ import time
 import subprocess
 import multiprocessing
 from struct import *
+
+sys.path.append('libs')
+sys.path.append('persistqueue')
 from libs.nftk_requirements import get_required_paths
-from libs.nftk_sys_funcs import delete_file, find_file, target_ip_private
+from libs.nftk_sys_funcs import delete_file, find_file, target_ip_private, is_a_file, get_range_in_subnet
 from libs import nftk_socket_controller as SocketController
 from libs import nftk_modify_proxychains_conf as PrxConf
+from persistqueue import queue
 #####################################################
 #ports = [i for i in range(1,65536)]
 #ports = [i for i in range(79,85)]
 THRESHOLD = 12
-TMPFILE = '/tmp/disc_ports_{}'
+TMPFILE = '/tmp/discovered_ports'
 #USETOR = False
 USETOR = True
 VERBOSE = True
@@ -86,6 +90,13 @@ except ImportError:
 
 PROG_NAME = 'surreptitious'
 VERBOSE_OUT = '[VERBOSE]'
+
+ROUTABLE_TARGETS = []
+NON_ROUTABLE_TARGETS = []
+
+SUBDOMAINS_STR = 'subdomains'
+IP_STR = 'ip'
+RANGE_STR = 'range'
 #####################################################
 
 # funcs
@@ -152,9 +163,9 @@ def scan_one(the_ip='', the_port=0, t_ix=1, tor_path=''):
 
         if(result == 0):
             if VERBOSE:
-                logger.info( "{} Discovered open port: {}".format(VERBOSE_OUT, the_port) )
+                logger.info( "{} Discovered open port: {} on {}".format(VERBOSE_OUT, the_port, the_ip) )
             with open(TMPFILE, "a") as myfile:
-                myfile.write("%s\n" % the_port)
+                myfile.write("{}:{}\n".format(the_ip,the_port))
 
         s.close()
 
@@ -263,7 +274,7 @@ def read_tmp_data():
     if os.path.exists(TMPFILE):
         with open(TMPFILE, "r") as myfile:
             disc_ports = myfile.read().split()
-        disc_ports.sort(key=int)
+        #disc_ports.sort(key=int)
 
     return disc_ports
 
@@ -415,10 +426,44 @@ else:
     usage()
     sys.exit()
 
-target_non_routable = target_ip_private(ip_addr=target)
+the_targets = []
+'''
+    handle different types of target data
+'''
+if "," in target:
+    the_targets = target.split(",")
+else:
+    the_targets.append(target)
+
+print(the_targets)
+print()
+
+if len(the_targets) > 0:
+    for t in the_targets:
+        if not is_a_file(fpath=t):
+            if target_ip_private(ip_addr=t):
+                NON_ROUTABLE_TARGETS.append(t)
+            else:
+                ROUTABLE_TARGETS.append(t)
+        else:
+            ''' process files here '''
+            # TODO
+            pass
+
+#target_non_routable = target_ip_private(ip_addr=target)
+############
+#print(NON_ROUTABLE_TARGETS)
+print("{} NON_ROUTABLE_TARGETS".format(len(NON_ROUTABLE_TARGETS)))
+print()
+#print(ROUTABLE_TARGETS)
+print("{} ROUTABLE_TARGETS\n\n".format(len(ROUTABLE_TARGETS)))
+#print len(ROUTABLE_TARGETS)
+#############
+
 
 LOG_FILE_LOC = 'tmp'
-LOG_FNAME = 'neurofuzzsecurity_{}_{}'.format(PROG_NAME, target)
+#LOG_FNAME = 'neurofuzzsecurity_{}_{}'.format(PROG_NAME, str(int(time.time())))
+LOG_FNAME = 'neurofuzzsecurity_{}'.format(PROG_NAME)
 formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',
                               datefmt='%Y-%m-%d %H:%M:%S')
 handler = logging.FileHandler("/{}/{}.log".format(LOG_FILE_LOC, LOG_FNAME), "a")
@@ -432,18 +477,19 @@ keep_fds = [handler.stream.fileno()]
 print("Log data being written to: '/{}/{}.log'".format(LOG_FILE_LOC, LOG_FNAME))
 
 logger.info( "{} starting - pid: {}".format(PROG_NAME, os.getpid()) )
-logger.info( "target: {}".format(target) )
-logger.info( "target non-routable: {}".format(target_non_routable) )
-logger.info( "start port: {}".format(start_port) )
-logger.info( "end port: {}".format(end_port) )
+#logger.info( "target: {}".format(target) )
+#logger.info( "target non-routable: {}".format(target_non_routable) )
+#logger.info( "start port: {}".format(start_port) )
+#logger.info( "end port: {}".format(end_port) )
 logger.info( "results path: {}/{}".format(results_path, target) )
 #####################################################
 
 if __name__ == "__main__":
 
-    if USETOR and target_non_routable:
-        print("\n{}\n\n".format("Cannot run using tor sockets against a non-routable target address"))
-        sys.exit()
+    delete_file(target_file=TMPFILE)
+    delete_file(target_file="proxychains.conf")
+
+    SocketController.clean_slate()
 
     the_ports = []
     if start_port < 1:
@@ -457,6 +503,36 @@ if __name__ == "__main__":
         the_ports.append(start_port)
     else:
         the_ports = [i for i in range(start_port,end_port+1)]
+
+    final_list = []
+    if len(the_ports) > 0:
+        for rt in ROUTABLE_TARGETS:
+            for tp in the_ports:
+                temp_s = "{}:{}".format(rt,tp)
+                if temp_s not in final_list:
+                    final_list.append(temp_s)
+
+    random.shuffle(final_list)
+    '''
+        store all combo's in the queue
+    '''
+    q = queue.Queue('.queue_file')
+
+    # check to see if there is any data in the queue
+    while q.qsize() > 0:
+        # TODO - what do we do with this data ???
+        ''' for now just clear the queue '''
+        q.get()
+
+
+    # populate the queue
+    for rt in final_list:
+        logger.info( "target: {}".format(rt) )
+        q.put(rt)
+
+    logger.info( "ip addresses added: {}".format(q.qsize()) )
+    logger.info( "start port: {}".format(start_port) )
+    logger.info( "end port: {}".format(end_port) )
 
     logger.info( "use tor: {}".format(USETOR) )
     logger.info( "verbose: {}".format(VERBOSE) )
@@ -473,15 +549,48 @@ if __name__ == "__main__":
     if exe_paths:
         if VERBOSE:
             logger.info( "{} detected paths: {}".format(VERBOSE_OUT, exe_paths) )
-        if exe_paths.has_key('error_message'):
-            print("\n{}\n\n".format(exe_paths['error_message']))
-            sys.exit()
+        try:
+            if exe_paths.has_key('error_message'):
+                print("\n{}\n\n".format(exe_paths['error_message']))
+                sys.exit()
+        except AttributeError:
+            if 'error_message' in exe_paths:
+                print("\n{}\n\n".format(exe_paths['error_message']))
+                sys.exit()
     else:
         print("\n{}\n\n".format("Problem with required paths, cannot continue"))
         sys.exit()
 
-    if target and len(the_ports) > 0 and results_path:
 
+    last_ix = 0
+    while q.qsize() > 0:
+
+        rand_ix = random.randint(1, THRESHOLD)
+        #print("LAST: {} - RAND: {}".format(last_ix,rand_ix))
+
+        while rand_ix == last_ix:
+            #print("EEEEEEEEEEQUALS: {} - {}".format(last_ix,rand_ix))
+            rand_ix = random.randint(1, THRESHOLD)
+            #print("LAST: {} - RAND: {}".format(last_ix,rand_ix))
+
+
+        target,v_port = q.get().split(':')
+
+        print("{} - {} - {}".format(target, v_port, rand_ix))
+
+        p = multiprocessing.Process(name=scan_one, args=[target,int(v_port),rand_ix,exe_paths['tor_path']], target=scan_one)
+        p.start()
+        p.join()
+
+        last_ix = rand_ix
+
+
+    """
+
+    #if target and len(the_ports) > 0 and results_path:
+    if len(ROUTABLE_TARGETS) == 1 and len(the_ports) > 0 and results_path:
+
+        target = ROUTABLE_TARGETS[0]
         main(tor_path=exe_paths['tor_path'], the_target=target, the_ports=the_ports)
 
         disc_ports = read_tmp_data()
@@ -502,4 +611,32 @@ if __name__ == "__main__":
         if REMOVE_RESULTS:
             delete_file(target_file=TMPFILE)
 
+    """
+
+    discovered_ip_ports = {}
+    disc_ports = read_tmp_data()
+    if disc_ports:
+        print("{}".format("FOUND:"))
+        for i in disc_ports:
+            print(i)
+            tip,tport = i.split(':')
+            if tip in discovered_ip_ports:
+                if tport not in discovered_ip_ports[tip]:
+                    discovered_ip_ports[tip].append(tport)
+            else:
+                discovered_ip_ports[tip] = []
+                discovered_ip_ports[tip].append(tport)
+
+    print(discovered_ip_ports)
+
+    # TODO - add nmap calls
+
+    # get rid of the results file
+    if REMOVE_RESULTS:
+        delete_file(target_file=TMPFILE)
+
+    try:
+        q.task_done()
+    except ValueError:
+        pass
     sys.exit()
