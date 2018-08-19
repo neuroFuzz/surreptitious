@@ -83,6 +83,7 @@ Notes:
 
 TODO:
 
+    - Build in support for ip address data to come from files [multiple formats ??]
     - Allow user to set the path for the log file
     - Improve final output (maybe use colors)
     - Perform nf toolkit updates on a per file basis based on detected changes
