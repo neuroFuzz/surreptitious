@@ -33,7 +33,8 @@ Requirements:
 Optional:
 
 - proxychains4
-- xmltodict (if you want JSON output of nmap results - 'sudo apt install python-xmltodict' on apt managed system)
+-- git clone https://github.com/rofl0r/proxychains-ng.git; make; sudo make install
+- xmltodict (if you want JSON output of nmap results - 'sudo apt install python-xmltodict' on apt managed system or 'sudo dnf install python3-xmltodict' on dnf managed system)
 
 
 Getting Started:
@@ -69,7 +70,8 @@ Notes:
             nmap's features. OS detection via nmap requires root privilege
 
     - this IS NOT fast, that is by design - it is written to try to NEVER trip
-        a sensor or alert a sentry
+        a sensor or alert a sentry while pursuing accurate results - usage of
+        this program requires the type of stealthy patience a real attacker has
 
     - Writes out the nmap results to the dir set forth with -p plus a subdir based
         on the target ip address, file names are in the following format:
@@ -81,8 +83,9 @@ Notes:
 
 TODO:
 
-    - Use logger to log output to file instead of stdout
-    - is USETOR make sure the target is a routable public ip
+    - Build in support for ip address data to come from files [multiple formats ??]
+    - Add outstanding queue size to syslog output
+    - Allow user to set the path for the log file
     - Improve final output (maybe use colors)
     - Perform nf toolkit updates on a per file basis based on detected changes
     - WTF do I do about UDP ports ???
